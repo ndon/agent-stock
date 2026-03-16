@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 
 import click
-import requests
 
+from ..api.qq import fetch_kline_payload
 from .quote import get_query_code
 
 
@@ -179,28 +178,7 @@ def _parse_lines(raw_lines: list[list[str]]) -> list[DayLineItem]:
 
 def get_kline_data(symbol: str, count: int = 45) -> dict:
     query_code = get_query_code(symbol)
-    url = "https://proxy.finance.qq.com/ifzqgtimg/appstock/app/newfqkline/get"
-    try:
-        response = requests.get(
-            url,
-            params={"param": f"{query_code},day,,,90,qfq"},
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-                "Referer": "https://gu.qq.com/",
-                "Accept": "application/json,text/plain,*/*",
-            },
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        text = response.text
-    except requests.HTTPError as exc:
-        raise click.ClickException(f"日K接口请求失败: HTTP {exc.response.status_code}") from exc
-    except requests.RequestException as exc:
-        raise click.ClickException(f"日K接口不可用: {exc}") from exc
-    try:
-        payload = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise click.ClickException("日K接口返回解析失败") from exc
+    payload = fetch_kline_payload(query_code)
     symbol_data = payload.get("data", {}).get(query_code)
     if not isinstance(symbol_data, dict):
         raise click.ClickException("无效股票代码或暂无日K数据")

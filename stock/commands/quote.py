@@ -1,26 +1,15 @@
 from __future__ import annotations
 
-import json
 import re
 from datetime import datetime
 
 import click
-import requests
+
+from ..api.baidu import fetch_latest_news_payload
+from ..api.qq import fetch_plate_payload, fetch_quote_json
 
 _A_CODE_PATTERN = re.compile(r"^(?:[56]\d{5}|[031]\d{5}|4\d{5}|8\d{5}|92\d{4})$")
 _HK_CODE_PATTERN = re.compile(r"^\d{5}$")
-
-
-def _http_get_with_proxy_fallback(url: str, **kwargs):
-    try:
-        return requests.get(url, **kwargs)
-    except requests.RequestException as exc:
-        if "socks" not in str(exc).lower():
-            raise
-        with requests.Session() as session:
-            session.trust_env = False
-            return session.get(url, **kwargs)
-
 
 def test_a_code(code: str) -> bool:
     return bool(_A_CODE_PATTERN.fullmatch(code))
@@ -95,28 +84,7 @@ def arr2obj(arr: list[str]) -> dict:
 
 def get_stock_by_code(symbol: str) -> dict:
     query_code = get_query_code(symbol)
-    url = "https://sqt.gtimg.cn"
-    try:
-        response = _http_get_with_proxy_fallback(
-            url,
-            params={"q": query_code, "fmt": "json"},
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-                "Referer": "https://gu.qq.com/",
-                "Accept": "application/json,text/plain,*/*",
-            },
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        text = response.content.decode("gbk", errors="ignore")
-    except requests.HTTPError as exc:
-        raise click.ClickException(f"行情接口请求失败: HTTP {exc.response.status_code}") from exc
-    except requests.RequestException as exc:
-        raise click.ClickException(f"行情接口不可用: {exc}") from exc
-    try:
-        payload = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise click.ClickException("行情接口返回解析失败") from exc
+    payload = fetch_quote_json(query_code)
     arr = payload.get(query_code)
     if not isinstance(arr, list) or len(arr) < 2:
         raise click.ClickException("无效股票代码或暂无行情数据")
@@ -165,26 +133,7 @@ def _format_plate_section(plates: list[dict] | None) -> str:
 
 def get_stock_plate_change(symbol: str) -> dict:
     code = get_stock_with_prefix(symbol.lower())
-    url = "https://proxy.finance.qq.com/ifzqgtimg/appstock/app/stockinfo/plateNew"
-    try:
-        response = _http_get_with_proxy_fallback(
-            url,
-            params={"code": code, "app": "wzq", "zdf": "1"},
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-                "Referer": "https://gu.qq.com/",
-                "Accept": "application/json,text/plain,*/*",
-            },
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except requests.HTTPError as exc:
-        raise click.ClickException(f"板块接口请求失败: HTTP {exc.response.status_code}") from exc
-    except requests.RequestException as exc:
-        raise click.ClickException(f"板块接口不可用: {exc}") from exc
-    except ValueError as exc:
-        raise click.ClickException("板块接口返回解析失败") from exc
+    payload = fetch_plate_payload(code)
     data = payload.get("data")
     if not isinstance(data, dict):
         raise click.ClickException("无效股票代码或暂无板块数据")
@@ -265,35 +214,7 @@ def get_stock_latest_news(symbol: str) -> dict:
     code = to_simple_code(normalized)
     if not market or not code:
         raise click.ClickException("无效股票代码或暂无资讯数据")
-    url = "https://finance.pae.baidu.com/vapi/sentimentlist"
-    try:
-        response = _http_get_with_proxy_fallback(
-            url,
-            params={
-                "market": market,
-                "code": code,
-                "query": code,
-                "financeType": "stock",
-                "benefitType": "",
-                "pn": "0",
-                "rn": "20",
-                "finClientType": "pc",
-            },
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-                "Referer": "https://gushitong.baidu.com/",
-                "Accept": "application/json,text/plain,*/*",
-            },
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except requests.HTTPError as exc:
-        raise click.ClickException(f"资讯接口请求失败: HTTP {exc.response.status_code}") from exc
-    except requests.RequestException as exc:
-        raise click.ClickException(f"资讯接口不可用: {exc}") from exc
-    except ValueError as exc:
-        raise click.ClickException("资讯接口返回解析失败") from exc
+    payload = fetch_latest_news_payload(market, code)
     result = payload.get("Result")
     if not isinstance(result, list) or not result:
         return {"symbol": normalized, "news": []}
