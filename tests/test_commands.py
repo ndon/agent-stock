@@ -1,6 +1,7 @@
 from click.testing import CliRunner
 
 from stock.cli import cli
+from stock.commands import fundflow as fundflow_command
 from stock.commands import kline as kline_command
 from stock.commands import quote as quote_command
 
@@ -138,3 +139,70 @@ def test_kline_output(monkeypatch):
     assert "时间,开盘价,收盘价,最高价,最低价,成交量,成交额" in result.output
     assert "20260310,10.2,10.8,10.9,10.1,1000手,5000万" in result.output
     assert "- EMA5: 10.55" in result.output
+
+
+def test_fundflow_output(monkeypatch):
+    monkeypatch.setattr(
+        fundflow_command,
+        "get_fundflow_data",
+        lambda _symbol: {
+            "spread": {
+                "unit": "万元",
+                "analysis": "主力净流入较强，市场情绪偏多。",
+                "rows": [
+                    {
+                        "name": "净特大单",
+                        "turnoverIn": 1200.5,
+                        "turnoverInRate": "12.5%",
+                        "turnoverOut": 800.3,
+                        "turnoverOutRate": "8.6%",
+                        "netTurnover": 400.2,
+                    },
+                    {
+                        "name": "净大单",
+                        "turnoverIn": 900.0,
+                        "turnoverInRate": "9.0%",
+                        "turnoverOut": 950.0,
+                        "turnoverOutRate": "9.5%",
+                        "netTurnover": -50.0,
+                    },
+                    {
+                        "name": "净中单",
+                        "turnoverIn": 500.0,
+                        "turnoverInRate": "5.0%",
+                        "turnoverOut": 450.0,
+                        "turnoverOutRate": "4.5%",
+                        "netTurnover": 50.0,
+                    },
+                    {
+                        "name": "净小单",
+                        "turnoverIn": 300.0,
+                        "turnoverInRate": "3.0%",
+                        "turnoverOut": 350.0,
+                        "turnoverOutRate": "3.5%",
+                        "netTurnover": -50.0,
+                    },
+                ],
+                "todayMain": {"mainIn": "2000", "mainOut": "1500", "mainNetIn": "500"},
+                "totals": {"turnoverInTotal": "2900.5", "turnoverOutTotal": "2550.3", "turnoverNetTotal": "350.2"},
+            },
+            "day": {
+                "unit": "万元",
+                "daily": [
+                    {"date": 20260310, "main": 120.5, "retail": -50.2},
+                    {"date": 20260311, "main": -30.0, "retail": 10.0},
+                ],
+            },
+        },
+    )
+    result = runner.invoke(cli, ["fundflow", "600519"])
+    assert result.exit_code == 0
+    assert "## 资金流向" in result.output
+    assert "### 资金分布(单位：万元)" in result.output
+    assert "```csv" in result.output
+    assert "类别,流入,流入占比,流出,流出占比,净流入" in result.output
+    assert "净特大单,1200.5,12.5%,800.3,8.6%,400.2" in result.output
+    assert "- 主力流入：2000，主力流出：1500，主力净流入：500" in result.output
+    assert "### 每日资金流向(单位：万元)" in result.output
+    assert "日期,主力净流入,散户净流入" in result.output
+    assert "20260310,120.5,-50.2" in result.output

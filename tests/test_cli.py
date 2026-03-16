@@ -12,6 +12,7 @@ def test_help_lists_planned_commands():
     assert "plate" in result.output
     assert "news" in result.output
     assert "kline" in result.output
+    assert "fundflow" in result.output
     assert "search" in result.output
     assert "market" in result.output
     assert "history" in result.output
@@ -46,6 +47,12 @@ def test_kline_help_supports_code_argument():
     result = runner.invoke(cli, ["kline", "--help"])
     assert result.exit_code == 0
     assert "CODE" in result.output
+
+
+def test_fundflow_help_supports_symbol_argument():
+    result = runner.invoke(cli, ["fundflow", "--help"])
+    assert result.exit_code == 0
+    assert "SYMBOL" in result.output
 
 
 def test_version():

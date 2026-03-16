@@ -11,7 +11,7 @@ DEFAULT_CONFIG = {
 
 
 def _config_path() -> Path:
-    from_env = os.getenv("stock_CONFIG_PATH")
+    from_env = os.getenv("STOCK_CONFIG_PATH")
     if from_env:
         return Path(from_env).expanduser()
     return Path.home() / ".agent-stock" / "config.json"
