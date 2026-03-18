@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-stock"
-version = "0.1.0"
-description = "A CLI for Stock (Red) — search, read, interact via reverse-engineered API"
+version = "0.1.1"
+description = "A fast CLI tool for real-time stock data"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
