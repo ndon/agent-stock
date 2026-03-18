@@ -4,12 +4,12 @@
 [![PyPI version](https://img.shields.io/pypi/v/agent-stock.svg)](https://pypi.org/project/agent-stock/)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://pypi.org/project/agent-stock/)
 
-股市数据命令行工具，支持市场、个股等数据。
+面向 AI Agent 的股市数据命令行工具。提供市场概览、个股行情、板块涨跌、技术指标与资金流向等信息，输出对机器可读的 Markdown/CSV 结构，便于自动化处理。
 
 ## 安装
 
 ```bash
-# pipx（推荐）
+# pipx（推荐，全局安装）
 pipx install agent-stock
 
 # uv tool
@@ -19,6 +19,8 @@ uv tool install agent-stock
 python -m pip install agent-stock
 ```
 
+### 升级
+
 升级到最新版本：
 
 ```bash
@@ -27,10 +29,15 @@ uv tool upgrade agent-stock
 python -m pip install -U agent-stock
 ```
 
+### 环境要求
+
+- Python ≥ 3.10
+- 运行环境可访问外部网络（用于获取行情与资讯数据）
+
 ## 快速开始
 
 ```bash
-# 常用
+# 常用查询
 stock quote 000001
 stock plate 000001
 stock news 000001
@@ -47,7 +54,24 @@ stock quote --help
 stock -v
 ```
 
-## 命令总览
+## 命令
+
+### 核心命令
+
+```bash
+stock market                        # 大盘指数总览（占位）
+stock quote <SYMBOL>                # 个股实时行情与关键指标
+stock plate <SYMBOL>                # 相关板块（地域/行业/概念）涨跌幅
+stock news <SYMBOL>                 # 个股最新资讯摘要
+stock kline <SYMBOL> --count N      # 最近 N 条日K + EMA/BOLL/KDJ/RSI
+stock fundflow <SYMBOL>             # 资金分布与每日主力/散户净流向
+stock chgdiagram --market ab        # 涨跌分布（ab/us/hk）
+stock heatmap --market ab           # 行业板块热力图（ab/us/hk）
+stock search <KEYWORD>              # 名称/关键词搜索（CSV）
+stock history <TICKER> -r 1m        # 历史K线（占位，范围：1d/5d/1m/3m/6m/1y/5y）
+stock config show                   # 查看当前配置
+stock config set market US          # 设置市场（US | CN | HK）
+```
 
 ### 全局选项
 
@@ -57,27 +81,6 @@ stock -v
 | -d, --verbose  | Flag          | —      | 启用调试日志             |
 | -i, --interval | 整数 [1,3600] | 10     | dashboard 刷新间隔（秒） |
 | --no-color     | Flag          | —      | 禁用颜色输出             |
-
-### 市场相关的命令
-
-| 命令        | 参数      | 选项                           | 说明                                            |
-| ----------- | --------- | ------------------------------ | ----------------------------------------------- |
-| market      | —         | —                              | 查看大盘指数总览（占位）                        |
-| search      | KEYWORD   | —                              | 按名称/关键词搜索（输出 CSV）                   |
-| chgdiagram  | —         | --market <ab/us/hk>（默认 ab） | 涨跌分布统计                                    |
-| heatmap     | —         | --market <ab/us/hk>（默认 ab） | 行业板块热力图                                  |
-| config show | —         | —                              | 查看当前配置                                    |
-| config set  | key value | —                              | 设置配置项（仅支持 market: US&#124;CN&#124;HK） |
-
-### 个股相关的命令
-
-| 命令     | 参数   | 选项                        | 说明                              |
-| -------- | ------ | --------------------------- | --------------------------------- |
-| quote    | SYMBOL | —                           | 查询个股实时报价与指标            |
-| plate    | SYMBOL | —                           | 查看地域/行业/概念相关板块涨跌幅  |
-| news     | SYMBOL | —                           | 查看个股最新资讯摘要              |
-| kline    | SYMBOL | --count N（1..90，默认 45） | 输出最近 N 条日 K 与常用技术指标  |
-| fundflow | SYMBOL | —                           | 查看资金分布、每日主力/散户净流向 |
 
 ## 配置
 
