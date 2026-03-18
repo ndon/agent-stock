@@ -6,6 +6,7 @@ import json
 
 import click
 
+from ..api.qq import fetch_search_payload
 from ..config_store import load_config, save_config
 
 VALID_RANGES = {"1d", "5d", "1m", "3m", "6m", "1y", "5y"}
@@ -33,7 +34,36 @@ def quote(tickers: tuple[str, ...]):
 @click.argument("keyword")
 def search(keyword: str):
     """按名称/关键词搜索股票。"""
-    _emit("暂无数据")
+    data = get_search_results(keyword)
+    click.echo(format_search_table(keyword, data))
+
+
+def get_search_results(keyword: str) -> list[dict]:
+    payload = fetch_search_payload(keyword)
+    items = payload.get("stock")
+    results: list[dict] = []
+    if isinstance(items, list):
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            code = str(it.get("code", "")).strip()
+            name = str(it.get("name", "")).strip()
+            type_ = str(it.get("type", "")).strip()
+            if code and name:
+                results.append({"code": code, "name": name, "type": type_})
+    return results
+
+
+def format_search_table(keyword: str, results: list[dict]) -> str:
+    if not results:
+        return "\n".join(["# 搜索结果", "", f"关键词: {keyword}", "", "- 暂无数据"])
+    lines = ["代码,名称,类型"]
+    for r in results:
+        code = str(r.get("code", ""))
+        name = str(r.get("name", ""))
+        type_ = str(r.get("type", ""))
+        lines.append(f"{code},{name},{type_}")
+    return "\n".join(["# 搜索结果", "", f"关键词: {keyword}", "", "```csv", *lines, "```"])
 
 
 @click.command()

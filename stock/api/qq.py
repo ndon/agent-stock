@@ -79,3 +79,27 @@ def fetch_plate_payload(code: str) -> dict:
         raise click.ClickException(f"板块接口不可用: {exc}") from exc
     except ValueError as exc:
         raise click.ClickException("板块接口返回解析失败") from exc
+
+
+def fetch_search_payload(query: str) -> dict:
+    url = "https://proxy.finance.qq.com/cgi/cgi-bin/smartbox/search"
+    try:
+        response = http_get_with_proxy_fallback(
+            url,
+            params={"stockFlag": "1", "fundFlag": "1", "app": "official_website", "query": query},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+                "Referer": "https://gu.qq.com/",
+                "Accept": "application/json,text/plain,*/*",
+            },
+            timeout=10.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return payload
+    except requests.HTTPError as exc:
+        raise click.ClickException(f"搜索接口请求失败: HTTP {exc.response.status_code}") from exc
+    except requests.RequestException as exc:
+        raise click.ClickException(f"搜索接口不可用: {exc}") from exc
+    except ValueError as exc:
+        raise click.ClickException("搜索接口返回解析失败") from exc

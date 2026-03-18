@@ -1,8 +1,11 @@
 from click.testing import CliRunner
 
 from stock.cli import cli
+from stock.commands import chgdiagram as chgdiagram_command
 from stock.commands import fundflow as fundflow_command
+from stock.commands import heatmap as heatmap_command
 from stock.commands import kline as kline_command
+from stock.commands import market as market_command
 from stock.commands import quote as quote_command
 
 runner = CliRunner()
@@ -78,10 +81,23 @@ def test_news_output(monkeypatch):
     assert "行业需求回暖，机构维持增持评级。" in result.output
 
 
-def test_search_table():
-    result = runner.invoke(cli, ["search", "Apple"])
+def test_search_table(monkeypatch):
+    monkeypatch.setattr(
+        market_command,
+        "get_search_results",
+        lambda _keyword: [
+            {"code": "sz300789", "name": "唐源电气", "type": "GP-A-CYB"},
+            {"code": "sh600519", "name": "贵州茅台", "type": "GP-A-AB"},
+        ],
+    )
+    result = runner.invoke(cli, ["search", "唐源"])
     assert result.exit_code == 0
-    assert "暂无数据" in result.output
+    assert "# 搜索结果" in result.output
+    assert "关键词: 唐源" in result.output
+    assert "```csv" in result.output
+    assert "代码,名称,类型" in result.output
+    assert "sz300789,唐源电气,GP-A-CYB" in result.output
+    assert "sh600519,贵州茅台,GP-A-AB" in result.output
 
 
 def test_market_output():
@@ -206,3 +222,47 @@ def test_fundflow_output(monkeypatch):
     assert "### 每日资金流向(单位：万元)" in result.output
     assert "日期,主力净流入,散户净流入" in result.output
     assert "20260310,120.5,-50.2" in result.output
+
+
+def test_chgdiagram_output(monkeypatch):
+    monkeypatch.setattr(
+        chgdiagram_command,
+        "get_chgdiagram_data",
+        lambda market="ab": {
+            "ratio": {"up": 3200, "balance": 500, "down": 1500},
+            "diagram": [
+                {"status": "up", "title": "+9%~+10%", "count": 100},
+                {"status": "same", "title": "0", "count": 20},
+                {"status": "down", "title": "-9%~-10%", "count": 80},
+            ],
+        },
+    )
+    result = runner.invoke(cli, ["chgdiagram"])
+    assert result.exit_code == 0
+    assert "## 涨跌分布" in result.output
+    assert "上涨：3200家，平盘：500家，下跌：1500家" in result.output
+    assert "```csv" in result.output
+    assert "状态,区间,数量" in result.output
+    assert "上涨,+9%~+10%,100" in result.output
+    assert "平盘,0,20" in result.output
+    assert "下跌,-9%~-10%,80" in result.output
+
+
+def test_heatmap_output(monkeypatch):
+    monkeypatch.setattr(
+        heatmap_command,
+        "get_heatmap_data",
+        lambda market="ab": {
+            "rows": [
+                {"name": "酿酒行业", "marketValue": "1234亿", "amount": "56亿", "pxChangeRate": "+1.23%"},
+                {"name": "有色金属", "marketValue": "900亿", "amount": "30亿", "pxChangeRate": "-0.88%"},
+            ]
+        },
+    )
+    result = runner.invoke(cli, ["heatmap"])
+    assert result.exit_code == 0
+    assert "## 行业板块热力图" in result.output
+    assert "```csv" in result.output
+    assert "行业板块,总市值,成交额,涨跌幅" in result.output
+    assert "酿酒行业,1234亿,56亿,+1.23%" in result.output
+    assert "有色金属,900亿,30亿,-0.88%" in result.output

@@ -7,7 +7,9 @@ import logging
 import click
 
 from . import __version__
+from .commands.chgdiagram import chgdiagram
 from .commands.fundflow import fundflow
+from .commands.heatmap import heatmap
 from .commands.kline import kline
 from .commands.market import config, history, market, search
 from .commands.quote import news, plate, quote
@@ -46,6 +48,8 @@ cli.add_command(history)
 cli.add_command(config)
 cli.add_command(kline)
 cli.add_command(fundflow)
+cli.add_command(chgdiagram)
+cli.add_command(heatmap)
 
 if __name__ == "__main__":
     cli()
