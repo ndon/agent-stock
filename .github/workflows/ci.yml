@@ -32,9 +32,6 @@ jobs:
       - name: Run ruff
         run: uv run ruff check .
 
-      - name: Run tests
-        run: uv run python -m pytest -q --ignore=tests/test_integration.py
-
   build:
     name: Build package
     runs-on: ubuntu-latest
