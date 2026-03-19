@@ -1,50 +1,72 @@
 ---
 name: agent-stock
-description: 用于股票行情查询与分析的命令行技能。用户提到 stock 命令、股票代码、最新资讯、市场概览、K 线或配置管理时调用。
+description: 面向 AI Agent 的股市数据命令行技能。根据用户关于股票查询、市场概览、行业热力图、板块涨跌、个股资讯、日K/技术指标、资金流向与代码搜索等诉求触发调用。
 author: AnoyiX
 version: "0.1.2"
 tags:
   - stock
-  - 股票
   - cli
-  - 行情
-  - kline
+  - 股票数据
 ---
 
 # agent-stock — 股票行情命令行技能
 
 **命令名：** `stock`
-**适用场景：** 查询股票实时行情、个股相关板块涨跌幅、个股最新资讯、市场快照、历史数据、日 K 技术指标，以及查看/设置默认市场配置。
+**适用场景：** 市场概览（涨跌分布、行业热力图）、个股实时行情、板块涨跌、最新资讯、日 K 与技术指标，以及资金分布/净流向与股票搜索。
 
-## 何时调用
+## 何时调用（意图触发）
 
-- 用户要求“查某只股票价格/涨跌幅/市值”
-- 用户要求“看某只股票相关地域/行业/概念板块涨跌幅”
-- 用户要求“看某只股票最新资讯/新闻摘要”
-- 用户要求“看市场总览/指数表现”
-- 用户要求“搜股票代码或名称”
-- 用户要求“查历史数据（1d/5d/1m/3m/6m/1y/5y）”
-- 用户要求“看日 K + 技术指标（EMA/BOLL/KDJ/RSI）”
-- 用户要求“查看或修改 agent-stock 配置（market）”
+- “查某只股票价格/涨跌幅/市值/成交量/估值” → quote
+- “看某只股票相关地域/行业/概念板块涨跌幅” → plate
+- “看某只股票最新资讯/新闻摘要” → news
+- “看市场涨跌分布/涨跌家数” → chgdiagram
+- “看行业板块热力图/热点行业/板块涨跌” → heatmap
+- “搜股票代码或名称/模糊搜索” → search
+- “看日K/技术指标/EMA/BOLL/KDJ/RSI/近N日数据” → kline
+- “看资金分布/主力净流入/散户净流入/每日资金流向” → fundflow
 
-## 全局参数
+## 参数规范
 
-- `-v, --version`：显示版本
+- symbol
+  - A 股：6 位数字，如 600519、000001
+  - 港股：5 位数字，如 00700
+  - 美股：us.<ticker>，如 us.aapl、us.msft（大小写不敏感）
+- market：市场枚举，用于市场类命令
+  - 取值：ab｜us｜hk，默认 ab（A 股）
 
-## 命令总览
 
-| 命令                   | 说明                   | 关键参数 |
-| ---------------------- | ---------------------- | -------- |
-| `stock quote <symbol>` | 查看单只股票实时行情   |          |
-| `stock plate <symbol>` | 查看个股相关板块涨跌幅 |          |
-| `stock news <symbol>`  | 查看个股最新资讯       |          |
-| `stock kline <symbol>` | 查看日 K 线 + 技术指标 |          |
+## 命令参数与帮助
 
-## 常用示例
+- `stock --help` 或 `stock <命令> --help`：查看帮助
 
+### 市场数据
+
+```bash
+stock index --market ab             # 大盘主要指数总览
+stock chgdiagram --market ab        # 涨跌分布
+stock heatmap --market ab           # 行业板块热力图
+stock search <keyword>              # 股票搜索
+```
+
+### 个股数据
+
+```bash
+stock quote <symbol>                # 个股实时行情
+stock plate <symbol>                # 个股相关板块涨跌幅（地域/行业/概念）
+stock news <symbol>                 # 个股最新资讯
+stock kline <symbol>                # 日K数据以及技术指标（EMA/BOLL/KDJ/RSI）
+stock fundflow <symbol>             # 资金分布与每日主力/散户净流向
+```
+
+## 常用示例（映射到命令）
+
+- `stock search 腾讯`
 - `stock quote 600519`
 - `stock plate 600519`
 - `stock news 600519`
 - `stock quote 00700`
 - `stock quote us.aapl`
-- `stock kline 600519`
+- `stock kline 600519 --count 60`
+- `stock fundflow 600519`
+- `stock chgdiagram --market ab`
+- `stock heatmap --market hk`

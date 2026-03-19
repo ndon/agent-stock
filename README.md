@@ -9,44 +9,30 @@
 ## 安装
 
 ```bash
-# pipx（推荐，全局安装）
-pipx install agent-stock
+# pipx
+pipx install agent-stock  # 安装
+pipx upgrade agent-stock  # 升级
 
 # uv tool
-uv tool install agent-stock
+uv tool install agent-stock  # 安装
+uv tool upgrade agent-stock  # 升级
 
-# pip（虚拟环境或本地环境）
-python -m pip install agent-stock
+# pip
+python -m pip install agent-stock     # 安装
+python -m pip install -U agent-stock  # 升级
 ```
-
-### 升级
-
-升级到最新版本：
-
-```bash
-pipx upgrade agent-stock
-uv tool upgrade agent-stock
-python -m pip install -U agent-stock
-```
-
-### 环境要求
-
-- Python ≥ 3.10
-- 运行环境可访问外部网络（用于获取行情与资讯数据）
 
 ## 快速开始
 
 ```bash
-# 常用查询
-stock quote 000001
-stock plate 000001
-stock news 000001
-
-# 技术分析与市场
-stock kline 000001
-stock fundflow 000001
+# 市场数据
+stock search 腾讯
 stock chgdiagram --market ab
 stock heatmap --market ab
+
+# 个股数据
+stock kline 000001
+stock fundflow 000001
 
 # 帮助与版本
 stock --help
@@ -55,6 +41,8 @@ stock -v
 ```
 
 ## 命令
+
+全局使用 `--help` 获取命令帮助，或针对特定命令添加 `--help` 获取详细参数说明，示例：`stock --help`。
 
 ### 市场数据
 
@@ -74,16 +62,6 @@ stock news <symbol>                 # 个股最新资讯
 stock kline <symbol>                # 日K数据以及技术指标（EMA/BOLL/KDJ/RSI）
 stock fundflow <symbol>             # 资金分布与每日主力/散户净流向
 ```
-
-### 全局选项
-
-| 选项           | 类型/范围     | 默认值 | 说明                     |
-| -------------- | ------------- | ------ | ------------------------ |
-| -v, --version  | —             | —      | 显示版本信息             |
-| -d, --verbose  | Flag          | —      | 启用调试日志             |
-| -i, --interval | 整数 [1,3600] | 10     | dashboard 刷新间隔（秒） |
-| --no-color     | Flag          | —      | 禁用颜色输出             |
-
 
 ## 开发
 
@@ -108,8 +86,6 @@ uv tool uninstall agent-stock
 
 # 调试
 uv run python -m stock quote 000001
-uv run python -m stock plate 000001
-uv run python -m stock news 000001
 ```
 
 ## License
