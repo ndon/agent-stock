@@ -14,6 +14,7 @@ from .commands.index import index
 from .commands.kline import kline
 from .commands.news import news
 from .commands.plate import plate
+from .commands.query import query
 from .commands.quote import quote
 from .commands.rank import rank
 from .commands.search import search
@@ -47,6 +48,7 @@ cli.add_command(quote)
 cli.add_command(plate)
 cli.add_command(news)
 cli.add_command(search)
+cli.add_command(query)
 cli.add_command(kline)
 cli.add_command(fundflow)
 cli.add_command(chgdiagram)

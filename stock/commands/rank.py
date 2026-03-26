@@ -2,11 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.qq import fetch_board_rank_payload
-
-
-def _suffix_percent(value: str) -> str:
-    return value if value.endswith("%") else f"{value}%"
+from ..api.qq import fetch_board_rank_payload, zdf_percent
 
 
 def get_board_rank_list(sort: str, direct: str, offset: int, count: int) -> dict:
@@ -29,7 +25,7 @@ def get_board_rank_list(sort: str, direct: str, offset: int, count: int) -> dict
                     "code": str(it.get("code", "")),
                     "name": str(it.get("name", "")),
                     "zxj": str(it.get("zxj", "")),
-                    "zdf": _suffix_percent(str(it.get("zdf", ""))),
+                    "zdf": zdf_percent(str(it.get("zdf", ""))),
                     "turnover": str(it.get("turnover", "")),
                     "hsl": str(it.get("hsl", "")),
                     "lb": str(it.get("lb", "")),

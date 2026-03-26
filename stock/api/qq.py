@@ -138,15 +138,19 @@ def _to_float(value: str, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
 
-
-def _suffix_percent(value: str) -> str:
-    return value if value.endswith("%") else f"{value}%"
-
-
 def _get(arr: list[str], index: int, default: str = "") -> str:
     if index < len(arr):
         return str(arr[index])
     return default
+
+def zdf_percent(value: str) -> str:
+    if value.endswith("%"):
+        return value if value.startswith("-") else f"+{value}"
+    return f"{value}%" if value.startswith("-") else f"+{value}%"
+
+
+def str_percent(value: str) -> str:
+    return value if value.endswith("%") else f"{value}%"
 
 
 def arr2obj(arr: list[str]) -> dict:
@@ -159,7 +163,7 @@ def arr2obj(arr: list[str]) -> dict:
         "code": _get(arr, 2),
         "name": _get(arr, 1),
         "price": _get(arr, 3),
-        "change_rate": _suffix_percent(_get(arr, 32)),
+        "change_rate": zdf_percent(_get(arr, 32)),
         "previous_close": _get(arr, 4),
         "open": _get(arr, 5),
         "high": _get(arr, 33),
@@ -167,7 +171,7 @@ def arr2obj(arr: list[str]) -> dict:
         "volume": volume,
         "market_value": f"{_get(arr, 45)}亿",
         "circulating_value": f"{_get(arr, 44)}亿",
-        "turnover_rate": _suffix_percent(_get(arr, 38)),
+        "turnover_rate": str_percent(_get(arr, 38)),
         "pe": _get(arr, 39),
         "pb": _get(arr, 46),
         "vr": _get(arr, 49 + index_offset),
