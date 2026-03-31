@@ -21,7 +21,7 @@ from .commands.search import search
 
 
 @click.group()
-@click.version_option(__version__, "-v", "--version", prog_name="stock")
+@click.version_option(__version__, "-v", "--version")
 @click.option("-d", "--verbose", is_flag=True, help="启用调试日志")
 @click.option(
     "-i",

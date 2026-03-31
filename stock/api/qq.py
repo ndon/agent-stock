@@ -201,3 +201,23 @@ def get_stock_by_code(symbol: str) -> dict:
     if not isinstance(arr, list) or len(arr) < 2:
         raise click.ClickException("无效股票代码或暂无行情数据")
     return arr2obj(arr)
+
+
+def fetch_fundflow_payload(code: str) -> dict:
+    url = "https://proxy.finance.qq.com/cgi/cgi-bin/fundflow/hsfundtab"
+    try:
+        response = http_get_with_proxy_fallback(
+            url,
+            params={"code": code, "type": "fiveDayFundFlow,todayFundFlow", "klineNeedDay": "20"},
+            headers=COMMON_HEADERS,
+            timeout=10.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return payload
+    except requests.HTTPError as exc:
+        raise click.ClickException(f"资金流向接口请求失败: HTTP {exc.response.status_code}") from exc
+    except requests.RequestException as exc:
+        raise click.ClickException(f"资金流向接口不可用: {exc}") from exc
+    except ValueError as exc:
+        raise click.ClickException("资金流向接口返回解析失败") from exc
