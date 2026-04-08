@@ -132,6 +132,38 @@ def fetch_board_rank_payload(
         raise click.ClickException("排行接口返回解析失败") from exc
 
 
+def fetch_pt_board_rank_payload(
+    board_type: str = "hy2",
+    sort_type: str = "priceRatio",
+    direct: str = "down",
+    offset: int = 0,
+    count: int = 30,
+) -> dict:
+    url = "https://proxy.finance.qq.com/cgi/cgi-bin/rank/pt/getRank"
+    try:
+        response = http_get_with_proxy_fallback(
+            url,
+            params={
+                "board_type": board_type,
+                "sort_type": sort_type,
+                "direct": direct,
+                "offset": str(offset),
+                "count": str(count),
+            },
+            headers=COMMON_HEADERS,
+            timeout=10.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return payload
+    except requests.HTTPError as exc:
+        raise click.ClickException(f"行业排行接口请求失败: HTTP {exc.response.status_code}") from exc
+    except requests.RequestException as exc:
+        raise click.ClickException(f"行业排行接口不可用: {exc}") from exc
+    except ValueError as exc:
+        raise click.ClickException("行业排行接口返回解析失败") from exc
+
+
 def fetch_news_payload(symbol: str, page: int = 1, n: int = 20) -> dict:
     url = "https://proxy.finance.qq.com/ifzqgtimg/appstock/news/info/search"
     try:

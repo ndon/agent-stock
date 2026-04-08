@@ -49,15 +49,18 @@ stock index --market <market>             # 大盘主要指数总览
 stock chgdiagram --market <market>        # 涨跌分布
 stock search <keyword>                    # 股票搜索，仅限股票名称、股票代码、股票简称搜索
 stock query <condition>                   # 条件选股
-stock rank --sort <sort> --count <count>  # 市场股票排序，限A股
 
+# 仅限A股使用的命令
+stock rank --sort <sort> --count <count>  # 市场股票排序，sort 默认值 turnover
+stock pt --sort <ptSort> --count <count>  # 申万行业板块排序，sort 默认值：priceRatio
 
 # 参数说明：
 # - market: 市场，可选 ab｜us｜hk，默认 ab
-# - sort: 排序类型，可选 turnover｜amplitude｜volumeRatio｜exchange｜priceRatio，默认 turnover
+# - sort: 排序类型，可选 turnover｜amplitude｜volumeRatio｜exchange｜priceRatio
 # - count: 排序数量，默认 20，取值范围 1 - 100
 # - keyword: 关键词，示例：腾讯、tengxun等
 # - condition: 自然语言的条件语句，示例："MACD金叉；KDJ金叉；非ST；非涨停；市盈率大于0；市盈率小于100；市值大于50亿；"
+# - ptSort: 排序类型 price｜priceRatio｜priceRatioD5｜priceRatioD20｜priceRatioD60｜priceRatioW52｜priceRatioY
 ```
 
 ### 个股数据
