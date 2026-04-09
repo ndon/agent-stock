@@ -99,10 +99,15 @@ uv run python -m stock quote 000001
 
 ## Trae
 
-使用如下命令在 Trae 中启用 skills
+使用如下命令在 Trae 中启用 agent-stock 技能：
 
 ```bash
 mkdir -p .trae/skills/
 
 ln -s $(pwd)/skills .trae/skills/agent-stock
 ```
+
+测试 agent-stock 技能：
+
+- 选股：`当前时间：2026-04-09 12:22:35，帮我选股`
+- 个股决策：`帮我决策 天孚通信`

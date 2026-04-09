@@ -1,12 +1,13 @@
 ---
 name: agent-stock
-description: AI 量化交易技能包。提供了股市实时数据获取工具，如市场概览、行业热力图、板块涨跌、个股资讯、日K/技术指标、资金流向与股票搜索等；还提供了交易决策的工作流，为用户提供股票交易建议。
+description: AI 量化交易技能包。提供了股市实时数据获取工具，如市场概览、行业热力图、板块涨跌、个股资讯、日K/技术指标、资金流向与股票搜索等；还提供了短线交易选股和短线交易决策的工作流，为用户提供股票交易建议。
 author: AnoyiX
 version: "0.1.8"
 tags:
   - Stock
   - CLI
   - 股票数据
+  - 选股
   - 交易决策
 ---
 
@@ -73,10 +74,10 @@ stock chgdiagram --market ab
 stock rank --sort turnover --count 20
 ```
 
+## 短线交易选股
+
+参考文档 [references/screen.md](references/screen.md)，为用户完成选股。
+
 ## 短线交易决策
 
-### 工作流
-
-- 1、参考文档 [references/trade.md](references/trade.md)，了解交易决策流程。
-- 2、根据用户提供的股票代码，使用 `stock` 命令获取实时数据。
-- 3、根据获取到的数据，参考文档中的交易建议，进行交易决策。
+参考文档 [references/trade.md](references/trade.md)，为用户完成个股交易决策。
