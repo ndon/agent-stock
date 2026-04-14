@@ -133,7 +133,7 @@ def fetch_board_rank_payload(
 
 
 def fetch_pt_board_rank_payload(
-    board_type: str = "hy2",
+    board_type: str = "hy",
     sort_type: str = "priceRatio",
     direct: str = "down",
     offset: int = 0,

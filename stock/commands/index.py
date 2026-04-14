@@ -3,7 +3,7 @@ from __future__ import annotations
 import click
 
 from ..api.baidu import fetch_chgdiagram_payload
-from ..api.qq import get_stock_by_query
+from ..api.qq import fetch_pt_board_rank_payload, get_stock_by_query, zdf_percent
 
 CODES = {
     'ab': [
@@ -114,6 +114,77 @@ def format_chgdiagram_markdown(data: dict) -> str:
     )
 
 
+def get_pt_board_rank_list(sort: str, direct: str, offset: int, count: int) -> dict:
+    payload = fetch_pt_board_rank_payload(
+        board_type="hy",
+        sort_type=sort,
+        direct=direct,
+        offset=offset,
+        count=count,
+    )
+    data_obj = payload.get("data") if isinstance(payload, dict) else {}
+    rank_list = data_obj.get("rank_list") if isinstance(data_obj, dict) else []
+    items: list[dict] = []
+    if isinstance(rank_list, list):
+        for it in rank_list:
+            if not isinstance(it, dict):
+                continue
+            lzg = it.get("lzg") or {}
+            items.append(
+                {
+                    "code": str(it.get("code", "").replace("pt", "")),
+                    "name": str(it.get("name", "")),
+                    "zdf": zdf_percent(str(it.get("zdf", ""))),
+                    "zdf_d5": zdf_percent(str(it.get("zdf_d5", ""))),
+                    "zd": str(it.get("zd", "")),
+                    "hsl": str(it.get("hsl", "")),
+                    "lb": str(it.get("lb", "")),
+                    "ltsz": str(it.get("ltsz", "")),
+                    "zljlr": str(it.get("zljlr", "")),
+                    "lzg_code": str(lzg.get("code", "")),
+                    "lzg_name": str(lzg.get("name", "")),
+                    "lzg_zdf": zdf_percent(str(lzg.get("zdf", ""))),
+                }
+            )
+    return {"offset": int(data_obj.get("offset", 0) or 0), "total": int(data_obj.get("total", 0) or 0), "items": items}
+
+
+def format_pt_rank_table(data: dict) -> str:
+    items = data.get("items", [])
+    if not items:
+        return "暂无数据"
+    lines = [
+        ",".join(
+            [
+                it.get("code", ""),
+                it.get("name", ""),
+                it.get("zdf", ""),
+                it.get("zdf_d5", ""),
+                it.get("zd", ""),
+                it.get("hsl", ""),
+                it.get("lb", ""),
+                it.get("ltsz", ""),
+                it.get("zljlr", ""),
+                it.get("lzg_code", ""),
+                it.get("lzg_name", ""),
+                it.get("lzg_zdf", ""),
+            ]
+        )
+        for it in items
+        if isinstance(it, dict)
+    ]
+    return "\n".join(
+        [
+            "## 行业板块",
+            "",
+            "```csv",
+            "代码,名称,涨跌幅,5日涨跌,涨跌额,换手率,量比,流通市值,主力净流入,领涨股票代码,领涨股票,领涨股涨跌",
+            *lines,
+            "```",
+        ]
+    )
+
+
 @click.command(name="index")
 @click.option(
     "--market",
@@ -132,3 +203,7 @@ def index(market: str):
     click.echo("")
     chgdiagram_data = get_chgdiagram_data(market)
     click.echo(format_chgdiagram_markdown(chgdiagram_data))
+    if market == "ab":
+        click.echo("")
+        pt_data = get_pt_board_rank_list("priceRatio", "down", 0, 30)
+        click.echo(format_pt_rank_table(pt_data))
