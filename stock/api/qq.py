@@ -7,7 +7,6 @@ import click
 import requests
 
 from . import http_get_with_proxy_fallback
-from .qq import get_stock_with_prefix, is_a_code, is_hk_code
 
 COMMON_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
