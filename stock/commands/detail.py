@@ -19,8 +19,7 @@ def _format_section(title: str, body: str) -> str:
 
 @click.command(name="detail")
 @click.argument("symbol")
-@click.option("--count", default=45, show_default=True, type=click.IntRange(1, 90), help="输出最近N条日K")
-def detail(symbol: str, count: int):
+def detail(symbol: str):
     """个股详情：包含行情、日K与技术指标、资金流向、板块、快讯"""
     sections: list[str] = []
 
@@ -33,13 +32,13 @@ def detail(symbol: str, count: int):
         sections.append(_format_section("实时行情", str(e)))
 
     try:
-        kline_data = get_kline_data(symbol, count=count)
+        kline_data = get_kline_data(symbol)
         sections.append(format_kline_markdown(kline_data))
     except click.ClickException as e:
         sections.append(_format_section("日K线", str(e)))
 
     try:
-        mline_data = get_mline_data(symbol, count=count)
+        mline_data = get_mline_data(symbol)
         sections.append(format_mline_markdown(mline_data))
     except click.ClickException as e:
         sections.append(_format_section("15分钟K线", str(e)))

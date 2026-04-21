@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.qq import fetch_chgdiagram_payload, fetch_pt_board_rank_payload, get_stock_by_query, zdf_percent
+from ..api.qq import fetch_chgdiagram_payload, fetch_pt_board_rank_payload, get_current_time, get_stock_by_query, zdf_percent
 
 CODES = {
     'ab': [
@@ -226,7 +226,7 @@ def index(market: str):
     """大盘指数行情"""
     market = market.lower()
     data = get_stock_by_query(','.join(CODES[market]))
-    click.echo("# 大盘行情")
+    click.echo(f"# 大盘行情 {get_current_time()}")
     click.echo("")
     click.echo(format_quotes_markdown(data))
     if market == "ab":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime
 
 import click
 import requests
@@ -229,6 +230,12 @@ def _get(arr: list[str], index: int, default: str = "") -> str:
         return str(arr[index])
     return default
 
+
+def _format_time(raw: str) -> str:
+    if len(raw) == 14:
+        return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]} {raw[8:10]}:{raw[10:12]}:{raw[12:14]}"
+    return raw
+
 def zdf_percent(value: str) -> str:
     if value.endswith("%"):
         return value if value.startswith("-") else f"+{value}"
@@ -261,6 +268,7 @@ def arr2obj(arr: list[str]) -> dict:
         "pe": _get(arr, 39),
         "pb": _get(arr, 46),
         "vr": _get(arr, 49 + index_offset),
+        "time": _format_time(_get(arr, 30)),
     }
 
 
@@ -352,7 +360,7 @@ def fetch_mline_payload(query_code: str, count: int = 48) -> dict:
     try:
         response = http_get_with_proxy_fallback(
             url,
-            params={"param": f"{query_code},m15,,{count}"},
+            params={"param": f"{query_code},m5,,{count}"},
             headers=COMMON_HEADERS,
             timeout=10.0,
         )
@@ -360,8 +368,13 @@ def fetch_mline_payload(query_code: str, count: int = 48) -> dict:
         payload = response.json()
         return payload
     except requests.HTTPError as exc:
-        raise click.ClickException(f"15分钟K线接口请求失败: HTTP {exc.response.status_code}") from exc
+        raise click.ClickException(f"5分钟K线接口请求失败: HTTP {exc.response.status_code}") from exc
     except requests.RequestException as exc:
-        raise click.ClickException(f"15分钟K线接口不可用: {exc}") from exc
+        raise click.ClickException(f"5分钟K线接口不可用: {exc}") from exc
     except ValueError as exc:
-        raise click.ClickException("15分钟K线接口返回解析失败") from exc
+        raise click.ClickException("5分钟K线接口返回解析失败") from exc
+
+
+def get_current_time() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+

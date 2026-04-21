@@ -44,15 +44,12 @@ stock -v
 ### 市场数据
 
 ```bash
-stock index --market <market>             # 大盘主要指数总览（A股含申万一级行业数据）
+stock index                               # 大盘主要指数总览（A股含申万一级行业数据）
 stock search <keyword>                    # 股票搜索，仅限股票名称、股票代码、股票简称搜索
-
-# 仅限A股使用的命令
 stock query <condition>                   # 条件选股
 stock rank --sort <sort> --count <count>  # 市场股票排序，sort 默认值 turnover
 
 # 参数说明：
-# - market: 市场，可选 ab｜us｜hk，默认 ab
 # - sort: 排序类型，可选 成交额 turnover｜量比 volumeRatio｜换手率 exchange｜涨跌幅 priceRatio｜主力净流入 netMainIn
 # - count: 排序数量，默认 20，取值范围 1 - 100
 # - keyword: 关键词，示例：腾讯、tengxun等
@@ -62,7 +59,7 @@ stock rank --sort <sort> --count <count>  # 市场股票排序，sort 默认值 
 ### 个股数据
 
 ```bash
-stock detail <symbol>               # 个股详情，包含股票实时行情、相关板块、最新新闻、日K数据、技术指标、资金流向等
+stock detail <symbol>               # 个股详情，包含股票实时行情、日K数据、技术指标、分时数据、资金流向、相关板块和概念、新闻等
 stock quote <symbols>               # 个股实时行情（支持批量查询）
 stock plate <symbol>                # 个股相关板块涨跌幅（地域/行业/概念）
 stock news <symbol>                 # 个股最新新闻

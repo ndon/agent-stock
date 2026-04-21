@@ -10,6 +10,7 @@ def format_quote_markdown(quote: dict) -> str:
         [
             "## 实时行情",
             "",
+            f"- 时间: {quote['time']}",
             f"- 代码: {quote['code']}",
             f"- 名称: {quote['name']}",
             f"- 价格: {quote['price']}",
