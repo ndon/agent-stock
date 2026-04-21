@@ -2,7 +2,7 @@
 name: agent-stock
 description: AI 量化交易技能包，用于获取股市实时数据、选股、交易决策、持仓分析等。
 author: AnoyiX
-version: "0.2.2"
+version: "0.2.3"
 tags:
   - Stock
   - 股票数据
@@ -27,6 +27,10 @@ python -m pip install agent-stock
 ```
 
 安装完毕后，可以通过 `stock --help` 或 `stock <子命令> --help` 查看帮助。
+
+### 源码地址
+
+[https://github.com/anoyix/agent-stock](https://github.com/anoyix/agent-stock)
 
 ## 常用工作流
 
