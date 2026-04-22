@@ -253,7 +253,7 @@ def _score_up_down_ratio(up_count: int, down_count: int, flat_count: int = 0) ->
     else:
         ratio = up_count / down_count
     ratio_score = _sigmoid(ratio, center=1.0, steepness=2.0) * 10.0
-    participation = (up_count + down_count) / (up_count + down_count + flat_count) if (up_count + down_count + flat_count) > 0 else 0.5
+    participation = (up_count + down_count) / (up_count + down_count + flat_count) if (up_count + down_count + flat_count) > 0 else 0.5  # noqa: E501
     participation_bonus = (participation - 0.5) * 2.0
     score = round(max(0.0, min(10.0, ratio_score + participation_bonus)), 1)
     if ratio > 3:
@@ -373,7 +373,7 @@ def _score_sector_change(pt_data: dict) -> tuple[float, str]:
         breadth_label = "分化"
     else:
         breadth_label = "偏空"
-    mainline_info = f"，主线板块：{', '.join(mainline_names)}（+1分）" if has_mainline else f"，涨幅前3：{', '.join(top3_names_zdf)}"
+    mainline_info = f"，主线板块：{', '.join(mainline_names)}（+1分）" if has_mainline else f"，涨幅前3：{', '.join(top3_names_zdf)}"  # noqa: E501
     desc = f"行业板块涨跌幅均值 {avg:+.2f}%，上涨板块占比 {breadth:.0%}（{breadth_label}）{mainline_info}"
     return score, desc
 
