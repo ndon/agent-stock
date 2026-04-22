@@ -42,7 +42,7 @@ def detail(symbol: str):
         mline_data = get_mline_data(symbol)
         sections.append(format_mline_markdown(mline_data))
     except click.ClickException as e:
-        sections.append(_format_section("15分钟K线", str(e)))
+        sections.append(_format_section("5分钟K线", str(e)))
 
     try:
         fundflow_data = get_fundflow_data(symbol)
