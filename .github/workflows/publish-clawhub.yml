@@ -61,7 +61,7 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED=0 node - <<'PUBLISH_SCRIPT'
           const { resolve } = require("path");
           const { readFileSync, statSync, readdirSync } = require("fs");
-          const folder = resolve("./skills");
+          const folder = resolve("./skills/agent-stock");
           const slug = process.env.CLAWHUB_SLUG;
           const version = process.env.VERSION;
 
