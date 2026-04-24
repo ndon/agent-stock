@@ -408,19 +408,14 @@ def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict, kl
     )
     if total >= 8:
         status = "主升"
-        action = "可积极操作，仓位上限 30%"
     elif total >= 6:
         status = "震荡偏强"
-        action = "可谨慎操作，仓位上限 20%"
     elif total >= 4:
         status = "震荡偏弱"
-        action = "仅低吸试探，仓位上限 10%"
     elif total >= 2:
         status = "退潮"
-        action = "仅优先关注，仓位上限 5%"
     else:
         status = "冰点"
-        action = "空仓观望，不开新仓"
     return {
         "dimensions": [
             {"name": "涨跌比", "weight": "20%", "score": up_down_score, "desc": up_down_desc},
@@ -432,7 +427,6 @@ def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict, kl
         ],
         "total": total,
         "status": status,
-        "action": action,
     }
 
 
@@ -447,7 +441,6 @@ def format_evaluation_markdown(eval_data: dict) -> str:
         lines.append(f"{d['name']},{d['weight']},{d['score']:.1f},{d['desc']}{note_str}")
     total = eval_data.get("total", 0)
     status = eval_data.get("status", "")
-    action = eval_data.get("action", "")
     return "\n".join(
         [
             "## 综合评估",
@@ -459,6 +452,5 @@ def format_evaluation_markdown(eval_data: dict) -> str:
             "",
             f"- 总分：{total:.1f}",
             f"- 市场状态：{status}",
-            f"- 建议：{action}",
         ]
     )

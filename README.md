@@ -67,33 +67,40 @@ stock detail <symbol>               # 个股详情，包含股票实时行情、
 
 ## 🤖 技能
 
-### 【个股决策】
+### Skill 安装
+
+```bash
+npx skills add https://github.com/AnoyiX/agent-stock/tree/main/skills/agent-stock
+```
+
+### Skill 清单
+
+**【个股决策】**
 
 输入示例： `帮我决策 天孚通信`
 
-### 【AI 选股】
+**【AI 选股】**
 
 输入示例： `帮我选股`
 
-### 【持仓分析】
+**【持仓分析】**
 
 输入示例（建议单次分析不要超过 6 只股票持仓的记录）：
 
 ```plaintext
 帮我分析持仓：
 
-资金余额: 400000, 总资产: 1000000, 总市值: 600000, 持仓占比: 60%
-\`\`\`csv
+资金余额: 1000000
+
 代码,名称,现价,成本,股数,持仓收益率,持仓占比
 000001,xxxxxx,20.45,20.33,400,+4.96%,1.51%
 000002,xxxxxx,20.82,21.84,1600,-2.92%,6.00%
 000003,xxxxxx,3.46,3.89,39900,-1.05%,24.41%
 000004,xxxxxx,26.89,25.34,1500,+2.88%,6.92%
-\`\`\`
 ```
 
 > [!TIP]
-> [Stocks AI 投资账本](https://ai.anoyi.com/dashboard/ths/tzzb) 可以一键复制持仓分析信息
+> [Stocks AI 投资账本](https://ai.anoyi.com/dashboard/ths/tzzb) 可以一键复制持仓信息!
 
 ## 🐛 开发
 
@@ -114,8 +121,7 @@ uv run python -m stock quote 000001
 在 IDE 中启用该技能，以 Trae 为例：
 
 ```bash
-mkdir -p .trae/skills/
+mkdir -p $(pwd)/.trae/skills/
 
-ln -s $(pwd)/skills ~/.trae/skills/agent-stock
+ln -s $(pwd)/skills $(pwd)/.trae/skills
 ```
-
